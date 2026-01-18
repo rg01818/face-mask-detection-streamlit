@@ -5,6 +5,9 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from PIL import Image
 import time
+import requests
+import os
+
 
 # ================= DEVELOPER NAME =================
 DEVELOPER_NAME = "Ronak Gupta"
@@ -28,7 +31,18 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ================= LOAD MODEL =================
-model = load_model("mask_detector_model.h5")
+MODEL_PATH = "mask_detector_model.h5"
+MODEL_URL = "https://github.com/rg01818/face-mask-detection-streamlit/releases/tag/v1.0"
+
+def download_model():
+    r = requests.get(MODEL_URL)
+    with open(MODEL_PATH, "wb") as f:
+        f.write(r.content)
+
+if not os.path.exists(MODEL_PATH):
+    download_model()
+
+model = load_model(MODEL_PATH)
 
 # ================= LOAD CASCADES =================
 face_cascade = cv2.CascadeClassifier(
