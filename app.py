@@ -1,4 +1,6 @@
 # ================= IMPORTS =================
+import os
+import subprocess
 import streamlit as st
 import cv2
 import numpy as np
@@ -28,7 +30,18 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ================= LOAD MODEL =================
-model = load_model("mask_detector_model.h5")
+MODEL_PATH = "mask_detector_model.h5"
+
+# Ensure Git LFS files are pulled on Streamlit Cloud
+if not os.path.exists(MODEL_PATH):
+    try:
+        subprocess.run(["git", "lfs", "pull"], check=True)
+    except Exception as e:
+        st.error("❌ Model file not found. Git LFS pull failed.")
+        st.stop()
+
+model = load_model(MODEL_PATH)
+
 
 # ================= LOAD CASCADES =================
 face_cascade = cv2.CascadeClassifier(
@@ -210,3 +223,4 @@ st.markdown(
     f"<hr><div class='footer'>© 2026 | Developed by <b>{DEVELOPER_NAME}</b></div>",
     unsafe_allow_html=True
 )
+
